@@ -45,7 +45,6 @@ def ambil_semua_matakuliah():
     cur.close()
     return hasil
 
-
 def masukkan_nilai(npm, kode_mk, nilai):
     cur = mysql.connection.cursor()
     cur.execute(
@@ -69,3 +68,22 @@ def menghitung_nilai_mutu(nilai):
     
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route('/')
+def home():
+    mahasiswa = ambil_semua_data()
+    matakuliah = ambil_semua_matakuliah()
+    return render_template('home.html', mahasiswa=mahasiswa, matakuliah=matakuliah)
+
+@app.route('/tambah_mahasiswa', methods=['POST'])
+def tambah_mahasiswa():
+    if request.method == 'POST':
+        npm = request.form['npm']
+        nama = request.form['nama']
+        email = request.form['email']
+        input_data(npm, nama, email)
+        return redirect(url_for('home'))
+
+@app.route('/tambah_matakuliah', methods=['POST'])
+def tambah_matakuliah():
+    if request.method == 'POST':
