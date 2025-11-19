@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Tambah Mahasiswa{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Tambah Mahasiswa</h5>
+    <form method="post">
+      <div class="mb-3">
+        <label for="nama" class="form-label">Nama</label>
+        <input type="text" class="form-control" id="nama" name="nama" required>
+      </div>
+      <div class="mb-3">
+        <label for="nim" class="form-label">NIM</label>
+        <input type="text" class="form-control" id="nim" name="nim" required>
+      </div>
+      <button class="btn btn-primary">Simpan</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

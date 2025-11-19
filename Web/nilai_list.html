@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Daftar Nilai{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Daftar Nilai Mahasiswa</h5>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nama</th>
+          <th>Mata Kuliah</th>
+          <th>Nilai Akhir</th>
+          <th>Huruf</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in data %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ d.nama }}</td>
+          <td>{{ d.nama_matkul }}</td>
+          <td>{{ "%.2f"|format(d.nilai_akhir_total) }}</td>
+          <td>{{ d.huruf_mutu }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">Belum ada data nilai.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
