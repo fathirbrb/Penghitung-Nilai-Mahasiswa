@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Admin - Sistem Penilaian{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <h2>Dashboard Admin</h2> 
+    <!-- BARIS TOMBOL DI ATAS TABEL -->
+<div class="row mb-4">
+  <div class="col-md-3 mb-2">
+    <a href="{{ url_for('tambah_mahasiswa') }}" class="btn btn-outline-primary w-100 py-3">
+      Tambah Mahasiswa
+    </a>
+  </div>
+  <div class="col-md-3 mb-2">
+    <a href="{{ url_for('tambah_matkul') }}" class="btn btn-outline-primary w-100 py-3">
+      Tambah Matkul
+    </a>
+  </div>
+  <div class="col-md-3 mb-2">
+    <a href="{{ url_for('nilai_input') }}" class="btn btn-outline-primary w-100 py-3">
+      Input Nilai
+    </a>
+  </div>
+  <div class="col-md-3 mb-2">
+    <a href="{{ url_for('nilai_list') }}" class="btn btn-outline-primary w-100 py-3">
+      List Nilai
+    </a>
+  </div>
+</div>
+
+    <!-- Daftar Mahasiswa -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Daftar Mahasiswa</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama</th>
+                        <th>NIM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mahasiswa %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ m.nama }}</td>
+                        <td>{{ m.nim }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">Belum ada data mahasiswa.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Daftar Mata Kuliah -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Daftar Mata Kuliah</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Mata Kuliah</th>
+                        <th>SKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k in matkul %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ k.nama_matkul }}</td>
+                        <td>{{ k.sks }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">Belum ada data mata kuliah.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Daftar Nilai Akhir Mahasiswa -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Daftar Nilai Akhir Mahasiswa</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Mahasiswa</th>
+                        <th>Mata Kuliah</th>
+                        <th>Nilai Akhir</th>
+                        <th>Huruf Mutu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for n in nilai_akhir %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ n.nama }}</td>
+                        <td>{{ n.nama_matkul }}</td>
+                        <td>{{ "%.2f"|format(n.nilai_akhir_total) }}</td>
+                        <td>{{ n.huruf_mutu }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">Belum ada data nilai.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
