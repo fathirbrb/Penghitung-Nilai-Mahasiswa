@@ -1,17 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-try:
-    from config import get_db_connection
-except (ImportError, AttributeError):
+import mysql.connector
 
-    import mysql.connector
-    def get_db_connection():
-        return mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="penilaian_mahasiswa",
-            auth_plugin="mysql_native_password"
-        )
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="penilaian_mahasiswa",
+        auth_plugin="mysql_native_password"
+    )
 
 app = Flask(__name__)
 app.secret_key = "rahasia"
@@ -19,8 +16,8 @@ app.secret_key = "rahasia"
 # HALAMAN UTAMA
 @app.route("/")
 def index():
-    return render_template("index.html")
-
+    # return render_template("index.html")
+    return redirect(url_for("dashboard"))
 
 # CRUD MAHASISWA
 @app.route("/mahasiswa/tambah", methods=["GET", "POST"])
@@ -44,7 +41,6 @@ def tambah_mahasiswa():
 
     return render_template("tambah_mahasiswa.html")
 
-
 # CRUD MATA KULIAH
 @app.route("/matkul/tambah", methods=["GET", "POST"])
 def tambah_matkul():
@@ -66,7 +62,6 @@ def tambah_matkul():
         return redirect(url_for("index"))
 
     return render_template("tambah_matkul.html")
-
 
 # INPUT NILAI MAHASISWA
 @app.route("/nilai/input", methods=["GET", "POST"])
@@ -208,6 +203,30 @@ def nilai_list():
     db.close()
 
     return render_template("nilai_list.html", data=data)
+
+@app.route("/dashboard")
+def dashboard():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM mahasiswa")
+    mahasiswa = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM mata_kuliah")
+    matkul = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT nm.id_nilai, m.nama, mk.nama_matkul, nm.nilai_akhir_total, nm.huruf_mutu
+        FROM nilai_akhir_mahasiswa nm
+        JOIN mahasiswa m ON nm.id_mahasiswa = m.id_mahasiswa
+        JOIN mata_kuliah mk ON nm.id_matkul = mk.id_matkul
+    """)
+    nilai_akhir = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template('dashboard.html', mahasiswa=mahasiswa, matkul=matkul, nilai_akhir=nilai_akhir)
 
 
 if __name__ == "__main__":
