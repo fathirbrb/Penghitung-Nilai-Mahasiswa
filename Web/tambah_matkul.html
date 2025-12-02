@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+
 {% block title %}Tambah Mata Kuliah{% endblock %}
+
 {% block content %}
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Tambah Mata Kuliah</h5>
     <form method="post">
+      <!-- Input Mata Kuliah -->
       <div class="mb-3">
         <label for="nama" class="form-label">Nama Mata Kuliah</label>
         <input type="text" class="form-control" id="nama" name="nama" required>
@@ -13,10 +16,37 @@
         <label for="sks" class="form-label">SKS</label>
         <input type="number" class="form-control" id="sks" name="sks" required>
       </div>
-      <button class="btn btn-primary">Simpan</button>
+
+      <!-- Input Persentase Penilaian -->
+      <h5>Input Persentase Penilaian</h5>
+      <div class="mb-3">
+        <label class="form-label">Persentase Absensi</label>
+        <input type="number" step="0.01" min="0" max="100" class="form-control" name="persentase_absensi" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Persentase Tugas</label>
+        <input type="number" step="0.01" min="0" max="100" class="form-control" name="persentase_tugas" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Persentase Quiz</label>
+        <input type="number" step="0.01" min="0" max="100" class="form-control" name="persentase_quiz" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Persentase UTS</label>
+        <input type="number" step="0.01" min="0" max="100" class="form-control" name="persentase_uts" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Persentase UAS</label>
+        <input type="number" step="0.01" min="0" max="100" class="form-control" name="persentase_uas" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Persentase Responsi (jika ada)</label>
+        <input type="number" step="0.01" min="0" max="100" class="form-control" name="persentase_responsi">
+      </div>
+
+      <!-- Simpan Semua Data -->
+      <button class="btn btn-success" type="submit">Simpan Semua Data</button>
     </form>
-    <hr>
-    <p>Catatan: Setelah menambah mata kuliah, pastikan ada entri di tabel <code>penilaian_mata_kuliah</code> untuk mengatur persentase komponen (quiz, tugas, uts, uas, absensi, responsi).</p>
   </div>
 </div>
 {% endblock %}
