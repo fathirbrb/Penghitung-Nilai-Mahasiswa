@@ -125,7 +125,7 @@ def tambah_persentase(id_matkul):
 
     return render_template("tambah_persentase.html", id_matkul=id_matkul)
 
-# INPUT NILAI MAHASISWA (Langkah 1: Simpan jumlah tugas dan quiz terlebih dahulu)
+# INPUT NILAI MAHASISWA
 @app.route("/nilai/input", methods=["GET", "POST"])
 def nilai_input():
     db = get_db_connection()
@@ -141,40 +141,25 @@ def nilai_input():
         try:
             id_mahasiswa = request.form["id_mahasiswa"]
             id_matkul = request.form["id_matkul"]
-
-            # Ambil jumlah tugas dan quiz yang sudah ditentukan sebelumnya
-            cursor.execute("""
-                SELECT tugas_number FROM nilai_tugas_detail WHERE id_matkul = %s
-            """, (id_matkul,))
-            jumlah_tugas = cursor.fetchone()["tugas_number"]
+            jumlah_tugas = int(request.form["jumlah_tugas"])
+            jumlah_quiz = int(request.form["jumlah_quiz"])
 
             cursor.execute("""
-                SELECT quiz_number FROM nilai_quiz_detail WHERE id_matkul = %s
-            """, (id_matkul,))
-            jumlah_quiz = cursor.fetchone()["quiz_number"]
-
-            # Menyimpan nilai tugas
-            for i in range(1, jumlah_tugas + 1):
-                nilai_tugas = float(request.form.get(f"tugas_{i}", 0))
-                cursor.execute("""
-                    INSERT INTO nilai_tugas_detail (id_matkul, npm, tugas_number, nilai_tugas)
-                    VALUES (%s, %s, %s, %s)
-                """, (id_matkul, id_mahasiswa, i, nilai_tugas))
-
-            # Menyimpan nilai quiz
-            for i in range(1, jumlah_quiz + 1):
-                nilai_quiz = float(request.form.get(f"quiz_{i}", 0))
-                cursor.execute("""
-                    INSERT INTO nilai_quiz_detail (id_matkul, npm, quiz_number, nilai_quiz)
-                    VALUES (%s, %s, %s, %s)
-                """, (id_matkul, id_mahasiswa, i, nilai_quiz))
+                INSERT INTO nilai_tugas_detail (id_matkul, npm, tugas_number)
+                VALUES (%s, %s, %s)
+            """, (id_matkul, id_mahasiswa, jumlah_tugas))
+            cursor.execute("""
+                INSERT INTO nilai_quiz_detail (id_matkul, npm, quiz_number)
+                VALUES (%s, %s, %s)
+            """, (id_matkul, id_mahasiswa, jumlah_quiz))
 
             db.commit()
-            flash("Nilai tugas dan quiz berhasil disimpan.", "success")
-            return redirect(url_for("nilai_input"))
+
+            flash("Jumlah Tugas dan Quiz berhasil disimpan. Sekarang lanjutkan input nilai tugas dan quiz.", "success")
+            return redirect(url_for("nilai_tugas_quiz_input", id_mahasiswa=id_mahasiswa, id_matkul=id_matkul))
 
         except Exception as e:
-            flash(f"Terjadi error saat menyimpan nilai: {e}", "danger")
+            flash(f"Terjadi error saat menyimpan jumlah tugas dan quiz: {e}", "danger")
             try:
                 cursor.close()
                 db.close()
@@ -186,7 +171,7 @@ def nilai_input():
     db.close()
     return render_template("nilai_input.html", mahasiswa=mahasiswa, matkul=matkul)
 
-# INPUT NILAI TUGAS, QUIZ, UTS, UAS, ABSENSI (Langkah 2: Input nilai tugas dan quiz)
+
 @app.route("/nilai/input/nilai", methods=["GET", "POST"])
 def nilai_tugas_quiz_input():
     db = get_db_connection()
@@ -195,42 +180,63 @@ def nilai_tugas_quiz_input():
     id_mahasiswa = request.args.get("id_mahasiswa")
     id_matkul = request.args.get("id_matkul")
 
-    # Mengambil jumlah tugas dan quiz yang disimpan sebelumnya
     cursor.execute("""
         SELECT tugas_number FROM nilai_tugas_detail WHERE npm = %s AND id_matkul = %s
     """, (id_mahasiswa, id_matkul))
-    jumlah_tugas = cursor.fetchone()["tugas_number"]
+    result_tugas = cursor.fetchone()
+    if result_tugas:
+        jumlah_tugas = result_tugas["tugas_number"]
+    else:
+        flash("Jumlah tugas tidak ditemukan!", "danger")
+        return redirect(url_for("nilai_input"))
 
     cursor.execute("""
         SELECT quiz_number FROM nilai_quiz_detail WHERE npm = %s AND id_matkul = %s
     """, (id_mahasiswa, id_matkul))
-    jumlah_quiz = cursor.fetchone()["quiz_number"]
+    result_quiz = cursor.fetchone()
+    if result_quiz:
+        jumlah_quiz = result_quiz["quiz_number"]
+    else:
+        flash("Jumlah quiz tidak ditemukan!", "danger")
+        return redirect(url_for("nilai_input"))
 
     if request.method == "POST":
         try:
-            # Menyimpan nilai tugas
+        #simpan nilai tugas
             for i in range(1, jumlah_tugas + 1):
-                nilai_tugas = float(request.form.get(f"tugas_{i}", 0))
+                nilai_tugas = float(request.form.get(f"tugas_{i}", 0))  # Ambil nilai tugas dari form
                 cursor.execute("""
                     INSERT INTO nilai_tugas_detail (id_matkul, npm, tugas_number, nilai_tugas)
                     VALUES (%s, %s, %s, %s)
                 """, (id_matkul, id_mahasiswa, i, nilai_tugas))
 
-            # Menyimpan nilai quiz
+            #simpan nilai quiz
             for i in range(1, jumlah_quiz + 1):
-                nilai_quiz = float(request.form.get(f"quiz_{i}", 0))
+                nilai_quiz = float(request.form.get(f"quiz_{i}", 0))  # Ambil nilai quiz dari form
                 cursor.execute("""
                     INSERT INTO nilai_quiz_detail (id_matkul, npm, quiz_number, nilai_quiz)
                     VALUES (%s, %s, %s, %s)
                 """, (id_matkul, id_mahasiswa, i, nilai_quiz))
 
-            db.commit()
+            #simpan nilai UTS, UAS, Responsi, dan Absensi
+            uts = float(request.form.get("uts", 0))
+            uas = float(request.form.get("uas", 0))
+            responsi = float(request.form.get("responsi", 0))
+            jumlah_pertemuan = int(request.form.get("jumlah_pertemuan", 0))
+            jumlah_hadir = int(request.form.get("jumlah_hadir", 0))
 
-            flash("Nilai tugas dan quiz berhasil disimpan.", "success")
+            #simpan data absensi
+            cursor.execute("""
+                INSERT INTO absensi (id_matkul, npm, jumlah_pertemuan, jumlah_hadir)
+                VALUES (%s, %s, %s, %s)
+            """, (id_matkul, id_mahasiswa, jumlah_pertemuan, jumlah_hadir))
+
+            db.commit()
+            flash("Nilai berhasil disimpan.", "success")
             return redirect(url_for("nilai_input"))
 
         except Exception as e:
-            flash(f"Terjadi error saat menyimpan nilai tugas dan quiz: {e}", "danger")
+            flash(f"Terjadi error saat menyimpan nilai: {e}", "danger")
             try:
                 cursor.close()
                 db.close()
