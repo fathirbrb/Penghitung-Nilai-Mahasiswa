@@ -1,19 +1,39 @@
 {% extends "base.html" %}
+
 {% block title %}Tambah Mahasiswa{% endblock %}
+
 {% block content %}
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Tambah Mahasiswa</h5>
-    <form method="post">
+    <form method="POST">
+      
+      <div class="mb-3">
+        <label for="npm" class="form-label">NPM</label>
+        <input type="text" class="form-control" id="npm" name="npm" required>
+      </div>
+
       <div class="mb-3">
         <label for="nama" class="form-label">Nama</label>
         <input type="text" class="form-control" id="nama" name="nama" required>
       </div>
+
       <div class="mb-3">
-        <label for="nim" class="form-label">NIM</label>
-        <input type="text" class="form-control" id="nim" name="nim" required>
+        <label for="jurusan" class="form-label">Jurusan</label>
+        <input type="text" class="form-control" id="jurusan" name="jurusan" required>
       </div>
-      <button class="btn btn-primary">Simpan</button>
+
+      <div class="mb-3">
+        <label for="angkatan" class="form-label">Angkatan</label>
+        <input type="number" class="form-control" id="angkatan" name="angkatan" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="program_studi" class="form-label">Program Studi</label>
+        <input type="text" class="form-control" id="program_studi" name="program_studi" required>
+      </div>
+
+      <button class="btn btn-success" type="submit">Simpan Mahasiswa</button>
     </form>
   </div>
 </div>
