@@ -1,8 +1,5 @@
-{% extends "base.html" %}
-
-{% block title %}Daftar Nilai{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Daftar Nilai{% endblock %} {% block
+content %}
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Daftar Nilai Mahasiswa</h5>
@@ -23,7 +20,7 @@
           <td>{{ d.nama }}</td>
           <td>{{ d.nama_matkul }}</td>
           <td>{{ "%.2f"|format(d.nilai_akhir_total) }}</td>
-          <td>{{ d.huruf_matkul }}</td>  <!-- Menampilkan huruf matkul yang benar -->
+          <td>{{ d.huruf_matkul }}</td>
         </tr>
         {% else %}
         <tr>
