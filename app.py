@@ -15,8 +15,55 @@ app.secret_key = "rahasia"
 
 # Halaman Utama (Redirect ke Dashboard)
 @app.route("/")
-def index():
-    return redirect(url_for("dashboard"))
+def index():ef index():
+    if "login" not in session and "login_user" not in session:
+        return redirect(url_for("login")) 
+    return redirect(url_for("dashboard")) 
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        user_type = request.form.get("user_type", "")  # 'admin' or 'user'
+
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+
+        # Admin login check
+        if user_type == "admin":
+            cursor.execute("SELECT * FROM admins WHERE username = %s", (username,))
+            akun = cursor.fetchone()
+            if akun and akun["password"] == password:
+                session["login"] = True
+                session["id_admin"] = akun["id"]
+                session["username"] = akun["username"]
+                return redirect(url_for("dashboard"))  # Redirect to dashboard for admin
+            else:
+                flash("Username atau kata sandi salah!", "danger")
+
+        # User login check
+        elif user_type == "user":
+            try:
+                username = int(username)  # Convert username to integer for user
+            except ValueError:
+                flash("Username harus berupa angka untuk user!", "danger")
+                return redirect(url_for("login"))
+
+            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            user = cursor.fetchone()
+            if user and user["password"] == password:
+                session["login_user"] = True
+                session["user_id"] = user["id"]
+                session["user_username"] = user["username"]
+                return redirect(url_for("nilai_list"))  # Redirect to nilai_list for user
+            else:
+                flash("Username atau kata sandi salah!", "danger")
+
+        cursor.close()
+        db.close()
+
+    return render_template("login.html")
 
 # CRUD MAHASISWA
 @app.route("/mahasiswa/tambah", methods=["GET", "POST"])
@@ -283,6 +330,10 @@ def nilai_list():
 # Dashboard Admin
 @app.route("/dashboard")
 def dashboard():
+     if "login" not in session:
+        flash("Please log in first.", "warning")
+        return redirect(url_for("login"))
+    
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
