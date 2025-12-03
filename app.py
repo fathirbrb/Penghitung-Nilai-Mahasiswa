@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import mysql.connector
 
 def get_db_connection():
@@ -330,7 +330,7 @@ def nilai_list():
 # Dashboard Admin
 @app.route("/dashboard")
 def dashboard():
-     if "login" not in session:
+    if "login" not in session:
         flash("Please log in first.", "warning")
         return redirect(url_for("login"))
     
