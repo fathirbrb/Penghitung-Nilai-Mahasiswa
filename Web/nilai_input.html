@@ -1,7 +1,4 @@
-{% extends "base.html" %}
-
-{% block title %}Input Nilai Mahasiswa{% endblock %}
-
+{% extends "base.html" %} {% block title %}Input Nilai Mahasiswa{% endblock %}
 {% block content %}
 <div class="card">
   <div class="card-body">
@@ -13,7 +10,7 @@
           <select name="id_mahasiswa" class="form-select" required>
             <option value="">-- Pilih Mahasiswa --</option>
             {% for m in mahasiswa %}
-              <option value="{{ m.npm }}">{{ m.nama }} ({{ m.npm }})</option>
+            <option value="{{ m.npm }}">{{ m.nama }} ({{ m.npm }})</option>
             {% endfor %}
           </select>
         </div>
@@ -23,7 +20,7 @@
           <select name="id_matkul" class="form-select" required>
             <option value="">-- Pilih Mata Kuliah --</option>
             {% for k in matkul %}
-              <option value="{{ k.id_matkul }}">{{ k.nama_matkul }}</option>
+            <option value="{{ k.id_matkul }}">{{ k.nama_matkul }}</option>
             {% endfor %}
           </select>
         </div>
@@ -32,11 +29,23 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Jumlah Tugas</label>
-          <input type="number" class="form-control" name="jumlah_tugas" min="1" required>
+          <input
+            type="number"
+            class="form-control"
+            name="jumlah_tugas"
+            min="1"
+            required
+          />
         </div>
         <div class="col-md-6">
           <label class="form-label">Jumlah Quiz</label>
-          <input type="number" class="form-control" name="jumlah_quiz" min="1" required>
+          <input
+            type="number"
+            class="form-control"
+            name="jumlah_quiz"
+            min="1"
+            required
+          />
         </div>
       </div>
 
