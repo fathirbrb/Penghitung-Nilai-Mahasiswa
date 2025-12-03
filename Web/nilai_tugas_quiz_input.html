@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Input Nilai Tugas dan Quiz{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Input Nilai Tugas dan Quiz</h5>
+    <form method="post">
+      <h6>Nilai Tugas</h6>
+      {% for i in range(1, jumlah_tugas + 1) %}
+      <div class="mb-3">
+        <label class="form-label">Tugas {{ i }}</label>
+        <input type="number" name="tugas_{{ i }}" class="form-control" min="0" max="100" step="0.01" value="0">
+      </div>
+      {% endfor %}
+
+      <h6>Nilai Quiz</h6>
+      {% for i in range(1, jumlah_quiz + 1) %}
+      <div class="mb-3">
+        <label class="form-label">Quiz {{ i }}</label>
+        <input type="number" name="quiz_{{ i }}" class="form-control" min="0" max="100" step="0.01" value="0">
+      </div>
+      {% endfor %}
+
+      <h6>Nilai UTS, UAS, Absensi, dan Responsi</h6>
+      <div class="mb-3">
+        <label class="form-label">Nilai UTS</label>
+        <input type="number" name="uts" class="form-control" min="0" max="100" step="0.01" value="0">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nilai UAS</label>
+        <input type="number" name="uas" class="form-control" min="0" max="100" step="0.01" value="0">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nilai Responsi (jika ada)</label>
+        <input type="number" name="responsi" class="form-control" min="0" max="100" step="0.01" value="0">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Jumlah Pertemuan</label>
+        <input type="number" name="jumlah_pertemuan" class="form-control" min="0" max="100" value="0">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Jumlah Hadir</label>
+        <input type="number" name="jumlah_hadir" class="form-control" min="0" max="100" value="0">
+      </div>
+
+      <!-- Simpan Nilai -->
+      <button class="btn btn-success" type="submit">Simpan Nilai</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
