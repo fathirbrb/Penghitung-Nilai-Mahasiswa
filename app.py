@@ -15,7 +15,7 @@ app.secret_key = "rahasia"
 
 # Halaman Utama (Redirect ke Dashboard)
 @app.route("/")
-def index():ef index():
+def index():
     if "login" not in session and "login_user" not in session:
         return redirect(url_for("login")) 
     return redirect(url_for("dashboard")) 
