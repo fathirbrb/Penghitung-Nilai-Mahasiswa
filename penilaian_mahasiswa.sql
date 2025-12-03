@@ -162,12 +162,15 @@ INSERT INTO `nilai_quiz` (`id_quiz`, `id_matkul`, `npm`, `rata_rata_quiz`) VALUE
 --
 
 CREATE TABLE `nilai_quiz_detail` (
-  `id_quiz_detail` int NOT NULL,
-  `id_matkul` int NOT NULL,
-  `npm` varchar(20) NOT NULL,
-  `quiz_number` int NOT NULL,
-  `nilai_quiz` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id_quiz_detail` INT NOT NULL AUTO_INCREMENT,
+  `id_matkul` INT NOT NULL,
+  `npm` VARCHAR(20) NOT NULL,  -- NPM mahasiswa
+  `quiz_number` INT NOT NULL,  -- Nomor quiz (Quiz 1, Quiz 2, dsb.)
+  `nilai_quiz` FLOAT DEFAULT 0 NOT NULL,  -- Nilai quiz (nilai default 0)
+  PRIMARY KEY (`id_quiz_detail`),
+  FOREIGN KEY (`id_matkul`) REFERENCES `mata_kuliah`(`id_matkul`) ON DELETE CASCADE,
+  FOREIGN KEY (`npm`) REFERENCES `mahasiswa`(`npm`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Triggers `nilai_quiz_detail`
@@ -250,12 +253,15 @@ INSERT INTO `nilai_tugas` (`id_tugas`, `id_matkul`, `npm`, `rata_rata_tugas`) VA
 --
 
 CREATE TABLE `nilai_tugas_detail` (
-  `id_tugas_detail` int NOT NULL,
-  `id_matkul` int NOT NULL,
-  `npm` varchar(20) NOT NULL,
-  `tugas_number` int NOT NULL,
-  `nilai_tugas` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id_tugas_detail` INT NOT NULL AUTO_INCREMENT,
+  `id_matkul` INT NOT NULL,
+  `npm` VARCHAR(20) NOT NULL,  -- NPM mahasiswa
+  `tugas_number` INT NOT NULL,  -- Nomor tugas (Tugas 1, Tugas 2, dsb.)
+  `nilai_tugas` FLOAT DEFAULT 0 NOT NULL,  -- Nilai tugas (nilai default 0)
+  PRIMARY KEY (`id_tugas_detail`),
+  FOREIGN KEY (`id_matkul`) REFERENCES `mata_kuliah`(`id_matkul`) ON DELETE CASCADE,
+  FOREIGN KEY (`npm`) REFERENCES `mahasiswa`(`npm`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Triggers `nilai_tugas_detail`
@@ -325,6 +331,7 @@ CREATE TRIGGER `update_rata_rata_tugas` AFTER INSERT ON `nilai_tugas_detail` FOR
     INSERT INTO nilai_tugas (id_matkul, npm, rata_rata_tugas)
     VALUES (NEW.id_matkul, NEW.npm, IFNULL(rata,0))
     ON DUPLICATE KEY UPDATE rata_rata_tugas = VALUES(rata_rata_tugas);
+
 END
 $$
 DELIMITER ;
