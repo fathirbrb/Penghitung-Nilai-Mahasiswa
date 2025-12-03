@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
 
-# Fungsi untuk menghubungkan ke database
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
@@ -12,7 +11,7 @@ def get_db_connection():
     )
 
 app = Flask(__name__)
-app.secret_key = "rahasia"  # Gantilah dengan secret key yang lebih aman
+app.secret_key = "rahasia"
 
 # Halaman Utama (Redirect ke Dashboard)
 @app.route("/")
@@ -24,22 +23,39 @@ def index():
 def tambah_mahasiswa():
     if request.method == "POST":
         nama = request.form.get("nama", "").strip()
-        nim = request.form.get("nim", "").strip()
+        npm = request.form.get("npm", "").strip()
+        jurusan = request.form.get("jurusan", "").strip()
+        angkatan = request.form.get("angkatan", "").strip()
+        program_studi = request.form.get("program_studi", "").strip()
 
-        if not nama or not nim:
-            flash("Nama dan NIM wajib diisi.", "danger")
+        if not nama or not npm or not jurusan or not angkatan or not program_studi:
+            flash("Semua field wajib diisi.", "danger")
             return redirect(url_for("tambah_mahasiswa"))
 
         db = get_db_connection()
         cursor = db.cursor()
-        cursor.execute("INSERT INTO mahasiswa (nama, npm) VALUES (%s, %s)", (nama, nim))
-        db.commit()
-        cursor.close()
-        db.close()
-        flash("Mahasiswa berhasil ditambahkan.", "success")
-        return redirect(url_for("index"))
+
+        try:
+            cursor.execute("""
+                INSERT INTO mahasiswa (npm, nama, jurusan, angkatan, program_studi) 
+                VALUES (%s, %s, %s, %s, %s)
+            """, (npm, nama, jurusan, angkatan, program_studi))
+            db.commit()
+
+            flash("Mahasiswa berhasil ditambahkan.", "success")
+            cursor.close()
+            db.close()
+            return redirect(url_for("index"))
+
+        except Exception as e:
+            db.rollback()
+            flash(f"Terjadi error saat menyimpan data: {e}", "danger")
+            cursor.close()
+            db.close()
+            return redirect(url_for("tambah_mahasiswa"))
 
     return render_template("tambah_mahasiswa.html")
+
 
 # CRUD MATA KULIAH
 @app.route("/matkul/tambah", methods=["GET", "POST"])
@@ -47,8 +63,7 @@ def tambah_matkul():
     if request.method == "POST":
         nama = request.form.get("nama", "").strip()
         sks = request.form.get("sks", "").strip()
-
-        # Validasi input
+        
         if not nama or not sks:
             flash("Nama mata kuliah dan SKS wajib diisi.", "danger")
             return redirect(url_for("tambah_matkul"))
@@ -57,15 +72,11 @@ def tambah_matkul():
         cursor = db.cursor()
 
         try:
-            # Simpan mata kuliah
             cursor.execute("INSERT INTO mata_kuliah (nama_matkul, sks) VALUES (%s, %s)", (nama, sks))
             db.commit()
-
-            # Ambil id_matkul mata kuliah yang baru ditambahkan
             cursor.execute("SELECT LAST_INSERT_ID()")
             id_matkul = cursor.fetchone()[0]
-
-            # Simpan persentase penilaian untuk mata kuliah ini
+            
             persentase_absensi = float(request.form["persentase_absensi"])
             persentase_tugas = float(request.form["persentase_tugas"])
             persentase_quiz = float(request.form["persentase_quiz"])
@@ -88,7 +99,7 @@ def tambah_matkul():
             return redirect(url_for("index"))
 
         except Exception as e:
-            db.rollback()  # Rollback jika terjadi error
+            db.rollback()
             flash(f"Terjadi error saat menyimpan data: {e}", "danger")
             cursor.close()
             db.close()
@@ -248,17 +259,17 @@ def nilai_tugas_quiz_input():
     db.close()
     return render_template("nilai_tugas_quiz_input.html", jumlah_tugas=jumlah_tugas, jumlah_quiz=jumlah_quiz)
 
+
 # LIST NILAI MAHASISWA
 @app.route("/nilai/list")
 def nilai_list():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # Mengambil data nilai akhir mahasiswa yang benar
     cursor.execute("""
         SELECT nm.id_nilai, m.nama, mk.nama_matkul, nm.nilai_akhir_total, nm.huruf_matkul
         FROM nilai_akhir_mahasiswa nm
-        JOIN mahasiswa m ON nm.npm = m.npm  -- Ganti id_mahasiswa dengan npm
+        JOIN mahasiswa m ON nm.npm = m.npm
         JOIN mata_kuliah mk ON nm.id_matkul = mk.id_matkul
         ORDER BY nm.id_nilai DESC
     """)
@@ -280,12 +291,10 @@ def dashboard():
 
     cursor.execute("SELECT * FROM mata_kuliah")
     matkul = cursor.fetchall()
-
-    # Query untuk mengambil data nilai akhir mahasiswa yang benar
     cursor.execute("""
         SELECT nm.id_nilai, m.nama, mk.nama_matkul, nm.nilai_akhir_total, nm.huruf_matkul
         FROM nilai_akhir_mahasiswa nm
-        JOIN mahasiswa m ON nm.npm = m.npm  -- Ganti id_mahasiswa dengan npm
+        JOIN mahasiswa m ON nm.npm = m.npm
         JOIN mata_kuliah mk ON nm.id_matkul = mk.id_matkul
     """)
     nilai_akhir = cursor.fetchall()
