@@ -1,14 +1,18 @@
-{% extends "base.html" %}
-{% block title %}Beranda - Sistem Penilaian{% endblock %}
-{% block content %}
+{% extends "base.html" %} {% block title %}Beranda - Sistem Penilaian{% endblock
+%} {% block content %}
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Selamat datang di Sistem Penilaian</h5>
-    <p class="card-text">Gunakan menu di atas untuk menambah mahasiswa, menambah mata kuliah, memasukkan nilai, dan melihat daftar nilai.</p>
-    <a class="btn btn-primary" href="{{ url_for('nilai_input') }}">Input Nilai</a>
-    <a class="btn btn-outline-primary" href="{{ url_for('nilai_list') }}">Lihat Nilai</a>
+    <p class="card-text">
+      Gunakan menu di atas untuk menambah mahasiswa, menambah mata kuliah,
+      memasukkan nilai, dan melihat daftar nilai.
+    </p>
+    <a class="btn btn-primary" href="{{ url_for('nilai_input') }}"
+      >Input Nilai</a
+    >
+    <a class="btn btn-outline-primary" href="{{ url_for('nilai_list') }}"
+      >Lihat Nilai</a
+    >
   </div>
 </div>
 {% endblock %}
-
-
